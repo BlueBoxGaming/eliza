@@ -7,10 +7,11 @@ import {
     Plugin,
     State,
 } from "@ai16z/eliza";
-import { generateCaption, generateImage } from "@ai16z/eliza";
+import { generateImage } from "@ai16z/eliza";
 
 import fs from "fs";
 import path from "path";
+import { validateImageGenConfig } from "./enviroment";
 
 export function saveBase64Image(base64Data: string, filename: string): string {
     // Create generatedImages directory if it doesn't exist
@@ -75,14 +76,22 @@ const imageGeneration: Action = {
         "MAKE_A",
     ],
     description: "Generate an image to go along with the message.",
-    validate: async (runtime: IAgentRuntime, message: Memory) => {
+    validate: async (runtime: IAgentRuntime, _message: Memory) => {
+        await validateImageGenConfig(runtime);
+
         const anthropicApiKeyOk = !!runtime.getSetting("ANTHROPIC_API_KEY");
         const togetherApiKeyOk = !!runtime.getSetting("TOGETHER_API_KEY");
         const heuristApiKeyOk = !!runtime.getSetting("HEURIST_API_KEY");
+        const falApiKeyOk = !!runtime.getSetting("FAL_API_KEY");
+        const openAiApiKeyOk = !!runtime.getSetting("OPENAI_API_KEY");
 
-        // TODO: Add openai DALL-E generation as well
-
-        return anthropicApiKeyOk || togetherApiKeyOk || heuristApiKeyOk;
+        return (
+            anthropicApiKeyOk ||
+            togetherApiKeyOk ||
+            heuristApiKeyOk ||
+            falApiKeyOk ||
+            openAiApiKeyOk
+        );
     },
     handler: async (
         runtime: IAgentRuntime,
@@ -145,7 +154,7 @@ const imageGeneration: Action = {
                     elizaLogger.error("Caption generation failed, using default caption:", error);
                 }*/
 
-                const caption = "...";
+                const _caption = "...";
                 /*= await generateCaption(
                     {
                         imageUrl: image,
