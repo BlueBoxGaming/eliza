@@ -1,6 +1,7 @@
 {
     "name": "guardian",
-    "clients": ["discord"],
+    "clients": ["discord", "twitter"],
+    "plugins": [],
     "modelProvider": "openai",
     "settings": {
         "secrets": {},
@@ -154,4 +155,4 @@
         "supportive",
         "accomplished"
     ]
-} 
+}
